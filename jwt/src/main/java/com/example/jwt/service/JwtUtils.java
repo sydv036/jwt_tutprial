@@ -22,7 +22,7 @@ public class JwtUtils {
 
     private final String jwtSecret = jwtSecret();
 //    private final String jwtSecret = "DANGVANSYUUUSKAHSHSITKASJSNSALTASJSASS";
-    private final long accessToken = 3600000;
+    private final long accessToken = 30000;
     private final long refreshToken = 3600000;
 
     public String generateAccessToken(String userName) {

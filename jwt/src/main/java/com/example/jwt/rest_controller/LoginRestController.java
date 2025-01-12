@@ -25,12 +25,13 @@ public class LoginRestController {
         if ("admin".equals(loginRequest.getUsername()) && "111".equals(loginRequest.getPassword())) {
             String accessToken = jwtUtils.generateAccessToken(loginRequest.getUsername());
             String refreshToken = jwtUtils.generateRefreshToken(loginRequest.getUsername());
-            System.out.printf(accessToken);
-            ResponseCookie responseCookie = ResponseCookie.fromClientResponse("access_token",
-                    accessToken).httpOnly(true)
+            System.out.println(accessToken);
+            ResponseCookie responseCookie = ResponseCookie.from("token",accessToken)
+                    .httpOnly(true)
                     .path("/")
                     .maxAge(Duration.ofDays(1))
-                    .sameSite("Lax")
+                    .sameSite("Lax") // Không dùng None ở localhost nếu không dùng HTTPS
+                    .secure(false)   // Bỏ secure để cookie hoạt động trên HTTP
                     .build();
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,responseCookie.toString()).body(accessToken);
         }
