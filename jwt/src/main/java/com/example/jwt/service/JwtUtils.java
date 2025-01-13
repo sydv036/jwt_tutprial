@@ -23,7 +23,7 @@ public class JwtUtils {
     private final String jwtSecret = jwtSecret();
 //    private final String jwtSecret = "DANGVANSYUUUSKAHSHSITKASJSNSALTASJSASS";
     private final long accessToken = 30000;
-    private final long refreshToken = 3600000;
+    private final long refreshToken = 60000;
 
     public String generateAccessToken(String userName) {
         return Jwts.builder()
@@ -53,23 +53,20 @@ public class JwtUtils {
 
     public boolean isJwt(String token) {
         try {
-//            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            // Sử dụng parserBuilder để kiểm tra token
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token);
             return true;
-        }
-//        catch (io.jsonwebtoken.security.SignatureException e) {
-//            System.out.println("Invalid JWT signature: {}"+ e.getMessage());
-//        }
-        catch (MalformedJwtException e) {
-            System.out.println("Invalid JWT token: {}"+e.getMessage());
+        } catch (MalformedJwtException e) {
+            System.out.println("Invalid JWT token: " + e.getMessage());
         } catch (ExpiredJwtException e) {
-            System.out.println("JWT token is expired: {}"+ e.getMessage());
-            return false; // Token đã hết hạn
+            System.out.println("JWT token is expired: " + e.getMessage());
+            return false; // Token hết hạn, trả về false
         } catch (UnsupportedJwtException e) {
-            System.out.println("JWT token is unsupported: {}"+ e.getMessage());
+            System.out.println("JWT token is unsupported: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("JWT claims string is empty: {}"+e.getMessage());
+            System.out.println("JWT claims string is empty: " + e.getMessage());
         }
-        return false;
+        return false; // Trường hợp token không hợp lệ
     }
+
 }

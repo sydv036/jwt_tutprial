@@ -31,6 +31,7 @@ public class StudentRestController {
     @GetMapping("/student-token")
     public ResponseEntity<?> getStudents(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         System.out.println("token:"+token);
+        token = token.substring("Bearer ".length());
         if (jwtUtils.isJwt(token)){
             List<Student> students = studentRepository.findAll();
             return ResponseEntity.ok(students);
