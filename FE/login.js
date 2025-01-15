@@ -17,10 +17,11 @@ $(() => {
       xhrFields: {
         withCredentials: true, // Cho phép gửi và nhận cookie
       },
-      success: function (response) {
-        console.log("Đăng nhập thành công:", response);
-        sessionStorage.setItem("token", response);
-        // callApiGet(); // Tiếp tục xử lý logic sau khi đăng nhập thành công
+      success: function (data) {
+        const response = JSON.parse(data);
+        console.log("Đăng nhập thành công:", response.token);
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("refreshToken", response.refreshToken);
         callApiWithToken();
       },
       error: function (error) {
@@ -45,15 +46,31 @@ $(() => {
     });
   }
   function callApiWithToken() {
-    console.log("token", sessionStorage.getItem("token"));
-
     $.ajax({
       type: "GET",
       url: API + "student-token",
       headers: {
-        Authorization: "Bearer " + sessionStorage.getItem("token"),
+        Authorization: "Bearer " + localStorage.getItem("token"),
       },
       success: function (response) {
+        console.log(response);
+      },
+      error: function (error) {
+        refreshToken();
+        console.log(error);
+      },
+    });
+  }
+  function refreshToken() {
+    $.ajax({
+      type: "POST",
+      url: API + "refresh-token",
+      data: JSON.stringify(localStorage.getItem("refreshToken")),
+      dataType: "json",
+      contentType: "application/json",
+      success: function (response) {
+        console.log("AccessTokenNew", response);
+        localStorage.setItem("token", response);
         console.log(response);
       },
       error: function (error) {

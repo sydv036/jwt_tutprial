@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 
@@ -38,7 +40,13 @@ public class LoginRestController {
                     .createdAt(now)
                     .userId(loginRequest.getUsername())
                     .build();
+            RefreshToken refreshTokenDelete = refreshTokenRepository.getByUserId(loginRequest.getUsername());
+            if (refreshTokenDelete != null){
+                refreshTokenRepository.delete(refreshTokenDelete);
+            }
             refreshTokenRepository.save(refreshTokenDB);
+
+
             ResponseCookie responseCookie = ResponseCookie.from("token", accessToken)
                     .httpOnly(true)
                     .path("/")
@@ -46,7 +54,10 @@ public class LoginRestController {
                     .sameSite("Lax") // Không dùng None ở localhost nếu không dùng HTTPS
                     .secure(false)   // Bỏ secure để cookie hoạt động trên HTTP
                     .build();
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(accessToken);
+            Map<String, String> tokens = new HashMap<String, String>();
+            tokens.put("token", accessToken);
+            tokens.put("refreshToken", refreshToken);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(tokens);
         }
         return ResponseEntity.badRequest().body("fail!");
     }

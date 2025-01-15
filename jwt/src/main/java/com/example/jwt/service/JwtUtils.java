@@ -14,8 +14,10 @@ public class JwtUtils {
         SecureRandom secureRandom = new SecureRandom();
         byte[] keyBytes = new byte[32]; // 32 bytes = 256 bits
         secureRandom.nextBytes(keyBytes);
-        String secretKey = Base64.getEncoder().encodeToString(keyBytes);
-        System.out.printf(secretKey);
+//        String secretKey = Base64.getEncoder().encodeToString(keyBytes);
+        String jwtSecrets = "DANGVANSYUUUSKAHSHSITKASJSNSALTASJSASS";
+        String secretKey = Base64.getEncoder().encodeToString(jwtSecrets.getBytes());
+
         return secretKey;
     }
 
@@ -23,7 +25,7 @@ public class JwtUtils {
     private final String jwtSecret = jwtSecret();
 //    private final String jwtSecret = "DANGVANSYUUUSKAHSHSITKASJSNSALTASJSASS";
     private final long accessToken = 30000;
-    private final long refreshToken = 60000;
+    private final long refreshToken = 6000000;
 
     public String generateAccessToken(String userName) {
         return Jwts.builder()
@@ -34,13 +36,6 @@ public class JwtUtils {
                 .compact();
     }
 
-    //    public String generateRefreshToken(String userName) {
-//        return Jwts.parser()
-//                .setSigningKey(jwtSecret)
-//                .parseClaimsJws(userName)
-//                .getBody()
-//                .getSubject();
-//    }
     public String generateRefreshToken(String userName) {
         return Jwts.builder()
                 .setSubject(userName)
@@ -52,7 +47,12 @@ public class JwtUtils {
 
 
     public boolean isJwt(String token) {
+        System.out.println("sercet:"+jwtSecret());
         try {
+            if(token.startsWith("Bearer ")) {
+                token = token.substring("Bearer ".length());
+            }
+            System.out.println("token:"+token);
             // Sử dụng parserBuilder để kiểm tra token
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token);
             return true;

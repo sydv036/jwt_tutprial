@@ -5,6 +5,7 @@ import com.example.jwt.repository.IStudentRepository;
 import com.example.jwt.service.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,14 +31,13 @@ public class StudentRestController {
     }
     @GetMapping("/student-token")
     public ResponseEntity<?> getStudents(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        System.out.println("token:"+token);
         token = token.substring("Bearer ".length());
         if (jwtUtils.isJwt(token)){
             List<Student> students = studentRepository.findAll();
             return ResponseEntity.ok(students);
         }
-        return ResponseEntity.ok("fail");
-//        List<Student> students = studentRepository.findAll();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access Denied!");
+//        List<Student> students = studentRepository.findAll(
 //        return ResponseEntity.ok(students);
     }
 }
